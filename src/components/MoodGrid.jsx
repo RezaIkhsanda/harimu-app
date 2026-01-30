@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { moods } from '../data/conversationTree';
 import useResponsive from '../hooks/useResponsive';
-import DailyAffirmation from './DailyAffirmation';
+import DailyAffirmation from './DailyAffirmation.jsx';
 
 const MoodGrid = ({ onSelectMood, userName }) => {
   const { isMobile, responsive } = useResponsive();

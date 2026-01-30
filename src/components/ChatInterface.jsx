@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import TypingIndicator from './TypingIndicator';
+import TypingIndicator from './TypingIndicator.jsx';
 import { conversationTree } from '../data/conversationTree';
 import useResponsive from '../hooks/useResponsive';
 
