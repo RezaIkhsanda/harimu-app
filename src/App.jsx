@@ -1,16 +1,16 @@
 import React, { useState, useRef, useCallback, lazy, Suspense, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import LandingView from './components/LandingView';
-import MoodGrid from './components/MoodGrid';
-import ChatInterface from './components/ChatInterface';
-import EndingAction from './components/EndingAction';
-import AudioPlayer from './components/AudioPlayer';
+import LandingView from './components/LandingView.jsx';
+import MoodGrid from './components/MoodGrid.jsx';
+import ChatInterface from './components/ChatInterface.jsx';
+import EndingAction from './components/EndingAction.jsx';
+import AudioPlayer from './components/AudioPlayer.jsx';
 import { moods } from './data/conversationTree';
 import './App.css';
 
 // Lazy load heavy components (only loaded when needed)
-const BalloonPop = lazy(() => import('./components/BalloonPop'));
-const HealingTreat = lazy(() => import('./components/HealingTreat'));
+const BalloonPop = lazy(() => import('./components/BalloonPop.jsx'));
+const HealingTreat = lazy(() => import('./components/HealingTreat.jsx'));
 
 // Simple loading fallback
 const LoadingFallback = () => (
