@@ -4,31 +4,30 @@ import LandingView from './components/LandingView.jsx';
 import MoodGrid from './components/MoodGrid.jsx';
 import ChatInterface from './components/ChatInterface.jsx';
 import EndingAction from './components/EndingAction.jsx';
-import AudioPlayer from './components/AudioPlayer.jsx';
+import GlobalAudio from './components/GlobalAudio.jsx';
 import { moods } from './data/conversationTree';
 import './App.css';
 
-// Lazy load heavy components (only loaded when needed)
+// Lazy load heavy components
 const BalloonPop = lazy(() => import('./components/BalloonPop.jsx'));
 const HealingTreat = lazy(() => import('./components/HealingTreat.jsx'));
 
-// Simple loading fallback
+// Loading fallback
 const LoadingFallback = () => (
   <div className="loading-fallback">
     <div className="loading-spinner">☁️</div>
   </div>
 );
 
-// Moods that trigger the BalloonPop stress relief
+// Moods that trigger BalloonPop
 const negativeMoods = ['burnout', 'socialAnxiety', 'loneliness'];
 
-// Optimized page variants - snappier transitions
+// Page transition config
 const pageVariants = {
   initial: { opacity: 0, y: 15 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: -10 }
 };
-
 const pageTransition = { duration: 0.25, ease: [0.25, 0.1, 0.25, 1] };
 
 function App() {
@@ -36,10 +35,11 @@ function App() {
   const [userName, setUserName] = useState('');
   const [selectedMood, setSelectedMood] = useState(null);
   const [audioActive, setAudioActive] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const [stressReliefType, setStressReliefType] = useState(null);
-  const audioPlayerRef = useRef(null);
+  const audioRef = useRef(null);
 
-  // Memoize mood color calculation
+  // Memoize mood color
   const moodColor = useMemo(() => {
     if (!selectedMood) return '#FFB7C5';
     const mood = moods.find(m => m.id === selectedMood);
@@ -54,11 +54,7 @@ function App() {
 
   const handleMoodSelect = useCallback((moodId) => {
     setSelectedMood(moodId);
-    
-    // Determine which stress relief to show
-    const type = negativeMoods.includes(moodId) && Math.random() < 0.6 
-      ? 'balloon' 
-      : 'treat';
+    const type = negativeMoods.includes(moodId) && Math.random() < 0.6 ? 'balloon' : 'treat';
     setStressReliefType(type);
     setCurrentView('stressRelief');
   }, []);
@@ -72,20 +68,33 @@ function App() {
   }, []);
 
   const handleRestart = useCallback(() => {
-    audioPlayerRef.current?.restoreVolume();
+    audioRef.current?.restoreVolume();
     setUserName('');
     setSelectedMood(null);
     setStressReliefType(null);
     setCurrentView('landing');
     setAudioActive(false);
+    setIsMuted(false);
   }, []);
 
   const handleSecretReveal = useCallback(() => {
-    audioPlayerRef.current?.lowerVolume();
+    audioRef.current?.lowerVolume();
+  }, []);
+
+  const handleToggleMute = useCallback(() => {
+    setIsMuted(prev => !prev);
   }, []);
 
   return (
     <div className="app">
+      {/* Global Audio - Always at top level, never unmounts during session */}
+      <GlobalAudio 
+        ref={audioRef}
+        isActive={audioActive}
+        isMuted={isMuted}
+        onToggleMute={handleToggleMute}
+      />
+
       <AnimatePresence mode="wait">
         {currentView === 'landing' && (
           <motion.div
@@ -176,8 +185,6 @@ function App() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <AudioPlayer ref={audioPlayerRef} isActive={audioActive} />
     </div>
   );
 }
